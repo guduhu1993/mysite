@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Blogs{% endblock %}
+{% block colume_name %}博客列表{% endblock %}
+{% block colume1 %}
+    {% for blog in page_blogs %}
+    <a href="{% url 'blog_detail' blog.id %}"><h3>{{ blog.title }}</h3></a>
+    <hr>
+    <p class="lead"><a href="{% url 'blog_detail' blog.id %}">{{ blog.content|striptags|truncatechars:30 }}</a></p>
+    {% empty %}
+    <p>------暂无博客-----</p>
+    {% endfor %}
+    <p>共有博客 {{ blogs|length }} 篇</p>
+{% endblock %}
+
+{% block colume2 %}
+    
+    {% for blog in types %}
+        <a href="{% url 'blog_type' blog.id %}"><h4>{{ blog.type_name }}</h4></a>
+    {% empty %}
+ 
+    {% endfor %}
+{% endblock %}
+{% block pagination %}
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+      <li><a href="?page={{ previous_page }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+      <li><a href="?page=1" aria-label="Previous"><span aria-hidden="true">第一页</span></a></li></li>
+      <li ><span aria-hidden="true">&nbsp;</span></li>
+      {% for page in current_page_list %}
+        {% if page_blogs.number == page %}
+          <li class="active"><span>{{ page }}</span></a></li>
+        {% else %}
+          <li><a href="?page={{ page }}" aria-label="Previous">{{ page }}</a></li>
+        {% endif %}
+      {% endfor %}
+      <li><span aria-hidden="true">&nbsp;</span></li>
+      <li><a href="?page={{ all_page_num }}" aria-label="Previous"><span aria-hidden="true">最后一页</span></a></li></li>
+      <li><a href="?page={{ next_page }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+    </ul>
+  </nav>
+  {% endblock %}  

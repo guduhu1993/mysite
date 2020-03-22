@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Blog Details{% endblock %}
+{% block colume1 %}
+<title>detail</title>
+{% for blog in blogs %}
+        <a href="{% url 'blog_detail' blog.id %}"><h3>{{ blog.title }}</h3></a>
+        <hr>
+        <a href="{% url 'blog_detail' blog.id %}"><p>{{ blog.content|truncatechars:30 }}</p></a>
+    {% empty %}
+        <p>------暂无博客-----</p>
+    {% endfor %}
+    
+    <p>共有博客 {{ blogs|length }} 篇</p>
+{% endblock %}
+
+{% block colume2 %}
+    <h4>博客分类</h4>
+    {% for blog in types %}
+        <a href="{% url 'blog_type' blog.id %}"><h4>{{ blog.type_name }}</h4></a>
+    {% empty %}
+ 
+    {% endfor %}
+{% endblock %}

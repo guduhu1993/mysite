@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Blog Details{% endblock %}
+{% block colume_name %}博客详情{% endblock %}
+{% block colume1 %}
+<!-- <h3>{{ blog.title }}</h3> -->
+<h3>{{ blog.title }}<span class="label label-default">New</span></h3>
+<p>作者： {{ blog.author }} </p>
+<p>发表日期：{{ blog.created_time|date:"Y-m-d G:n:s" }}</p>
+<a href="{% url 'blog_type' blog.blog_type.id %}">
+    <p>类型：{{ blog.blog_type }}</p>
+</a>
+<p>{{ blog_content|safe }}</p>
+{% endblock %}
+
+{% block colume2 %}
+<h4>博客分类</h4>
+{% for blog in types %}
+<a href="{% url 'blog_type' blog.id %}">
+    <h4>{{ blog.type_name }}</h4>
+</a>
+{% empty %}
+{% endfor %}
+{% endblock %}
+
+{% block pagination %}
+<nav aria-label="...">
+    <ul class="pager">
+        {% if previous_blog %}
+        <li><a href="{% url 'blog_detail' previous_blog.id %}">上一篇&nbsp;{{ previous_blog.title }}</a></li>
+        {% endif %}
+        <li><br></li>
+        {% if next_blog %}
+        <li><a href="{% url 'blog_detail' next_blog.id %}">下一篇&nbsp;{{ next_blog.title }}</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endblock %}
+
+{% block comment %}
+<div class="row">
+    <div>
+        <div style="margin: 2em;border: 1px dashed;padding: 2em;">
+            {% if user.is_authenticated %}
+            已登陆
+            <form action="{% url 'update_comment' %}" method="POST">
+                {% csrf_token %}
+                <textarea name="text" cols="160" rows="10"></textarea>
+                <input type="hidden" name="object_id" value="{{ blog.id }}">
+                <input type="hidden" name="content_type" value="blog">
+                <input type="submit" value="提交">
+            </form>
+            {% else %}
+
+            <a href="{% url 'login' %}?from={{ requdsts.get_full_path }}">未登录</a>
+            111{{ requdsts.get_full_path }}111
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div>
+        <div style="margin: 2em;border: 1px dashed;padding: 2em;">
+            {% for comment in comments %}
+            {{ blog.user }}<br>
+            {{ comment.created_time }}<br>
+            {{ comment.text }}
+            {% empty %}
+            无
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
