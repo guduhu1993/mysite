@@ -42,17 +42,19 @@
         <div style="margin: 2em;border: 1px dashed;padding: 2em;">
             {% if user.is_authenticated %}
             已登陆
-            <form action="{% url 'update_comment' %}" method="POST">
+            <form id='comments_form' action="{% url 'update_comment' %}" method="POST">
                 {% csrf_token %}
-                <textarea name="text" cols="160" rows="10"></textarea>
-                <input type="hidden" name="object_id" value="{{ blog.id }}">
-                <input type="hidden" name="content_type" value="blog">
+                {{ comments_form }}
+                <!-- <textarea name="text" cols="160" rows="10"></textarea> -->
+                <!-- <input type="hidden" name="object_id" value="{{ blog.id }}"> -->
+                <!-- <input type="hidden" name="content_type" value="blog"> -->
                 <input type="submit" value="提交">
             </form>
             {% else %}
-
-            <a href="{% url 'login' %}?from={{ requdsts.get_full_path }}">未登录</a>
-            111{{ requdsts.get_full_path }}111
+            <a href="{% url 'login' %}?from={{ request.get_full_path }}">登录</a>
+            <span>or</span>
+            <a href="{% url 'register' %}?from={{ request.get_full_path }}">注册</a>
+            {{ requests.get_full_path }}
             {% endif %}
         </div>
     </div>
@@ -60,14 +62,43 @@
 <div class="row">
     <div>
         <div style="margin: 2em;border: 1px dashed;padding: 2em;">
-            {% for comment in comments %}
-            {{ blog.user }}<br>
-            {{ comment.created_time }}<br>
-            {{ comment.text }}
-            {% empty %}
-            无
-            {% endfor %}
+            <div id='comment_list'>
+                {% for comment in comments %}
+                <div>
+                    {{ blog.user }}<br>
+                    {{ comment.created_time }}<br>
+                    {{ comment.text | safe }}
+                </div>
+                {% empty %}
+                无
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    $("#comments_form").submit(function () {
+        event.preventDefault() //阻止form表单默认提交
+        $.ajax({
+            url: "{% url 'update_comment' %}",
+            type: "POST",
+            data: $(this).serialize(),
+            cache: "false",
+            async: true,
+            success: function (data) {
+                if (data['status'] == 'SUCCESS') {
+                    $("#comments_form").empty();
+                    // var comment_html = '<div>'+data["username"]+'('+data["comment_time"]+')'+data["text"]+'</div>';
+                    // $("#comment_list").prepend(comment_html);
+                    window.location.reload()
+                }
+            },
+            error: function (xhr) {
+                console.log(xhr);
+            }
+        })
+    })
+</script>
 {% endblock %}

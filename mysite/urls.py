@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from blog.views import blog_list
-from .views import home,login
+from .views import home,login,register
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -26,6 +26,7 @@ urlpatterns = [
     path('', home, name='home'),
     path('mdeditor/', include('mdeditor.urls')),
     path('login/', login, name='login'),
+    path('register/', register, name='register'),
     path('comment/', include('comment.urls')),
 ]
 
