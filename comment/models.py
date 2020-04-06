@@ -16,5 +16,15 @@ class Comment(models.Model):
     Content_object = GenericForeignKey('content_type', 'object_id')
     object_id = models.PositiveIntegerField()
 
+    root = models.ForeignKey(
+        'self', related_name='root_comment', null=True, on_delete=models.DO_NOTHING)
+    parent = models.ForeignKey(
+        'self', related_name='parent_comment', null=True, on_delete=models.DO_NOTHING)
+    reply_to = models.ForeignKey(
+        User, related_name="replies", null=True, on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return self.text
+
     class Meta:
         ordering = ["-created_time"]

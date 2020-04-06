@@ -45,6 +45,7 @@
             <form id='comments_form' action="{% url 'update_comment' %}" method="POST">
                 {% csrf_token %}
                 {{ comments_form }}
+                <!-- {{ reply_comment_id }} -->
                 <!-- <textarea name="text" cols="160" rows="10"></textarea> -->
                 <!-- <input type="hidden" name="object_id" value="{{ blog.id }}"> -->
                 <!-- <input type="hidden" name="content_type" value="blog"> -->
@@ -64,11 +65,19 @@
         <div style="margin: 2em;border: 1px dashed;padding: 2em;">
             <div id='comment_list'>
                 {% for comment in comments %}
-                <div>
-                    {{ blog.user }}<br>
-                    {{ comment.created_time }}<br>
-                    {{ comment.text | safe }}
-                </div>
+                    <div class="comment">
+                        {{ blog.user }}<br>
+                        {{ comment.created_time }}<br>
+                        {{ comment.text | safe }}
+                        {% for reply in comment.root_comment.all %}
+                            <div class="reply">
+                                {{ reply.user.usernaem }}
+                                {{ reply.created_time }}
+                                回复
+                                {{ reply.text }}
+                            </div>
+                        {% endfor %}
+                    </div>
                 {% empty %}
                 无
                 {% endfor %}
@@ -80,7 +89,7 @@
 {% block script %}
 <script type="text/javascript">
     $("#comments_form").submit(function () {
-        event.preventDefault() //阻止form表单默认提交
+        // event.preventDefault() //阻止form表单默认提交
         $.ajax({
             url: "{% url 'update_comment' %}",
             type: "POST",

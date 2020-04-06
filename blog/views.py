@@ -40,7 +40,7 @@ def blog_detail(requests, blog_id):
     context['blog'] = blog
     blog_comment_type = ContentType.objects.get_for_model(blog)
     comments = Comment.objects.filter(
-        content_type=blog_comment_type, object_id=blog_id)
+        content_type=blog_comment_type, object_id=blog_id, parent=None)
     context['blog_content'] = markdown.markdown(blog.content.replace("\r\n", '  \n'), extensions=[
         'markdown.extensions.extra',
         'markdown.extensions.codehilite',
