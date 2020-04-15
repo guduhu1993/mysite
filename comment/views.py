@@ -31,7 +31,6 @@ def update_comment(request):
 
     # referer = request.META.get('HTTP_REFERER')
     comment_form = CommentForm(request.POST, user=request.user)
-    print('pppppp',request.POST)
     data = {}
     if comment_form.is_valid():
         # 检查保存数据

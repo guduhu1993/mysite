@@ -56,6 +56,7 @@ def blog_detail(requests, blog_id):
     data = {}
     data['content_type'] = blog_comment_type.model
     data['object_id'] = blog_id
+    data['reply_comment_id'] = 0
     context['comments_form'] = CommentForm(initial=data)
     return render(requests, 'blog/blog_detail.html', context)
 

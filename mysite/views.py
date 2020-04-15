@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from django.contrib import auth
 from django.contrib.auth.models import User
-from .form import Loginform, Registerform
+from .form import Loginform, Registerform, UpdateEmail
 from django.urls import reverse
 # Create your views here.
 
@@ -45,3 +45,29 @@ def register(requests):
     context = {}
     context['register_form'] = register_form
     return render(requests, 'register.html', context)
+
+
+def logout(requests):
+    auth.logout(requests)
+    return redirect(requests.GET.get('from', reverse('home')))
+
+
+def user_info(requests):
+    context = {}
+    return render(requests, 'user_info.html', context)
+
+
+def update_email(requests):
+    if requests.method == "POST":
+        email_form = UpdateEmail(requests.POST, user=requests.user)
+        if email_form.is_valid():
+            email = email_form.cleaned_data['email']
+            user=requests.user
+            user.email=email
+            user.save()
+            return redirect(requests.GET.get('from', reverse('home')))
+    else:
+        email_form = UpdateEmail()
+    context = {}
+    context['email_form'] = email_form
+    return render(requests, 'update_email.html', context)

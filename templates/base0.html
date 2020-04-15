@@ -87,33 +87,7 @@
 
   {% block content %}{% endblock %}
 
-  {% block lift_colume %}
-  <div class="container-fluid"></div>
-  <div class="row">
-    <div class="col-md-8">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4>{% block colume_name %}{% endblock %}</h4>
-        </div>
-        <div class="panel-body">
-          {% block colume1 %}{% endblock %}
-        </div>
-      </div>
-    </div>
-    {% endblock %}
-    {% block right_colume %}
-    <div class="col-md-3">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4>博客分类</h4>
-        </div>
-        <div class="panel-body">
-          {% block colume2 %}{% endblock %}
-        </div>
-      </div>
-    </div>
-  </div>
-  {% endblock %}
+ 
   {% block pagination %}{% endblock %}
   {% block comment %}{% endblock %}
   {% block script %}{% endblock %}

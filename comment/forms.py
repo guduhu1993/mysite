@@ -9,8 +9,9 @@ class CommentForm(forms.Form):
     object_id = forms.IntegerField(widget=forms.HiddenInput)
     text = forms.CharField(widget=forms.Textarea,
                            error_messages={'required': '评论内容不能为空'})
-    reply_comment_id = forms.IntegerField(widget=forms.HiddenInput(attrs={'id': 'reply_comment_id'}))
-    print(reply_comment_id)
+    reply_comment_id = forms.IntegerField(
+        widget=forms.HiddenInput(attrs={'id': 'reply_comment_id'}))
+
     def __init__(self, *args, **kwargs):
         if "user" in kwargs:
             self.user = kwargs.pop('user')
@@ -30,7 +31,6 @@ class CommentForm(forms.Form):
             self.cleaned_data['content_object'] = model_obj
         except ObjectDoesNotExist:
             raise forms.ValidationError('评论文章不存在')
-        print(11111)
         return self.cleaned_data
 
     def clean_reply_comment_id(self):
