@@ -67,3 +67,32 @@ def blog_type(requests, blog_type_id):
     context['types'] = get_list_or_404(BlogType)
     context['blogs'] = Blog.objects.filter(blog_type=blog_type)
     return render(requests, 'blog/blog_with_type.html', context)
+
+
+def search(requests):
+    context = {}
+    search_wd = requests.GET.get('wd')
+    blogs_page_list = Blog.objects.filter(title__icontains=search_wd)
+    paginator = Paginator(blogs_page_list, 10)
+    page_num = requests.GET.get('page')
+    print(page_num)
+    contacts = paginator.get_page(page_num)
+    all_page_num = len(paginator.page_range)
+    context['search_wd'] = search_wd
+    context['blogs'] = blogs_page_list
+    context['page_result'] = contacts
+    context['all_page_num'] = all_page_num
+    if len(paginator.page_range) - 1 > int(contacts.number) > 2:
+        context['current_page_list'] = [
+            i for i in range(1, int(contacts.number) + 3)]
+    elif int(contacts.number) in [1, 2]:
+        context['current_page_list'] = range(1, all_page_num + 1)
+    elif int(contacts.number) > len(paginator.page_range) - 2:
+        context['current_page_list'] = range(
+            all_page_num - 4, all_page_num + 1)
+    context['types'] = get_list_or_404(BlogType)
+    context['next_page'] = contacts.next_page_number(
+    ) if contacts.has_next() else contacts.number
+    context['previous_page'] = contacts.previous_page_number(
+    ) if contacts.has_previous() else contacts.number
+    return render(requests, 'blog/results.html', context)

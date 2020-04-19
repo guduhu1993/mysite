@@ -18,6 +18,7 @@ def login(requests):
         if login_form.is_valid():
             user = login_form.cleaned_data['user']
             auth.login(requests, user)
+            print(requests.GET.get('from'))
             return redirect(requests.GET.get('from', reverse('home')))
     else:
         login_form = Loginform()
@@ -62,8 +63,8 @@ def update_email(requests):
         email_form = UpdateEmail(requests.POST, user=requests.user)
         if email_form.is_valid():
             email = email_form.cleaned_data['email']
-            user=requests.user
-            user.email=email
+            user = requests.user
+            user.email = email
             user.save()
             return redirect(requests.GET.get('from', reverse('home')))
     else:
@@ -71,3 +72,5 @@ def update_email(requests):
     context = {}
     context['email_form'] = email_form
     return render(requests, 'update_email.html', context)
+
+

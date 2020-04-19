@@ -19,6 +19,7 @@ from blog.views import blog_list
 from .views import home,login,register,logout,user_info,update_email
 from django.conf.urls.static import static
 from django.conf import settings
+from blog.views import search
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,6 +32,7 @@ urlpatterns = [
     path('user_info/', user_info, name='user_info'),
     path('update_email/', update_email, name='update_email'),
     path('comment/', include('comment.urls')),
+    path('search/', search, name='search'),
 ]
 
 if settings.DEBUG:

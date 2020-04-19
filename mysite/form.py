@@ -4,8 +4,9 @@ from django.contrib.auth.models import User
 
 
 class Loginform(forms.Form):
-    username = forms.CharField(label='用户名', required=True)
-    password = forms.CharField(label='密码', widget=forms.PasswordInput)
+    username = forms.CharField(label='用户名', widget=forms.TextInput(
+        attrs={"class": "form-control", "placehoder": "请输入用户名"}))
+    password = forms.CharField(label='密码', widget=forms.PasswordInput(attrs={"class": "form-control", "placehoder": "密码"}))
 
     def clean(self):
         username = self.cleaned_data['username']
