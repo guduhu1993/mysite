@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
   <title>{% block title %}My blog site{% endblock %}</title>
-
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
@@ -21,7 +19,6 @@
       <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
     <![endif]-->
 </head>
-
 <body>
   <nav class="navbar navbar-default">
     <div class="container-fluid">
@@ -36,12 +33,11 @@
         </button>
         <a class="navbar-brand" href="{% url 'home' %}">LOVSLD 个人博客</a>
       </div>
-
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-          <li class="active"><a href="{% url 'home' %}">首页 <span class="sr-only">(current)</span></a></li>
-          <li><a href="{% url 'blog_list' %}">博客</a></li>
+          <li><a href="{% url 'home' %}">首页 <span class="sr-only">(current)</span></a></li>
+          <li class="active"><a href="{% url 'blog_list' %}">博客</a></li>
           <!-- <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -72,8 +68,6 @@
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
               aria-expanded="false">{{ user.username }} <span class="caret"></span></a>
             <ul class="dropdown-menu">
-              <li><a href="#">Action</a></li>
-              <li><a href="#">Another action</a></li>
               <li><a href="{% url 'user_info' %}?from={{ request.get_full_path }}">用户中心</a></li>
               <li role="separator" class="divider"></li>
               <li><a href="{% url 'logout' %}?from={{ request.get_full_path }}">退出登录</a></li>
@@ -84,18 +78,15 @@
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
   </nav>
-
   {% block home %}{% endblock %}
-
   {% block content %}{% endblock %}
-
   {% block lift_colume %}
   <div class="container-fluid"></div>
   <div class="row">
     <div class="col-md-8">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h4>{% block colume_name %}{% endblock %}</h4>
+          <h4 style="margin-left: 100px;margin-right: 100px;">{% block colume_name %}{% endblock %}</h4>
         </div>
         <div class="panel-body">
           {% block colume1 %}{% endblock %}
@@ -120,5 +111,4 @@
   {% block comment %}{% endblock %}
   {% block script %}{% endblock %}
 </body>
-
 </html>

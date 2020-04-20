@@ -3,14 +3,18 @@
 {% block title %}Blogs{% endblock %}
 {% block colume_name %}博客列表{% endblock %}
 {% block colume1 %}
+<div>
     {% for blog in page_blogs %}
-    <a href="{% url 'blog_detail' blog.id %}"><h3>{{ blog.title }}</h3></a>
+    <div style="margin-left: 100px;margin-right: 100px;">
+    <a href="{% url 'blog_detail' blog.id %}" style="text-decoration:none;"><h3>{{ blog.title }}</h3></a>
+    <p class="lead"><a href="{% url 'blog_detail' blog.id %}" style="text-decoration:none;color:black;font-size: 13px;">{{ blog.content|striptags|truncatechars:200 }}</a></p>
+    </div>
     <hr>
-    <p class="lead"><a href="{% url 'blog_detail' blog.id %}">{{ blog.content|striptags|truncatechars:30 }}</a></p>
     {% empty %}
     <p>------暂无博客-----</p>
     {% endfor %}
-    <p>共有博客 {{ blogs|length }} 篇</p>
+    <p style="margin-left: 100px;margin-right: 100px;">共有博客 {{ blogs|length }} 篇</p>
+  </div>
 {% endblock %}
 
 {% block colume2 %}   
@@ -20,7 +24,7 @@
     {% endfor %}
 {% endblock %}
 {% block pagination %}
-<nav aria-label="Page navigation">
+<nav aria-label="Page navigation" style="text-align: center;">
     <ul class="pagination">
       <li><a href="?page={{ previous_page }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
       <li><a href="?page=1" aria-label="Previous"><span aria-hidden="true">第一页</span></a></li></li>

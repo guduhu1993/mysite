@@ -1,23 +1,35 @@
 {% extends "base.html" %}
 {% block title %}Blog Details{% endblock %}
+{% block colume_name %}博客列表{% endblock %}
 {% block colume1 %}
 <title>detail</title>
-{% for blog in blogs %}
-        <a href="{% url 'blog_detail' blog.id %}"><h3>{{ blog.title }}</h3></a>
+<div>
+    {% for blog in blogs %}
+    <div style="margin-left: 100px;margin-right: 100px;">
+    <a href="{% url 'blog_detail' blog.id %}">
+            <h3>{{ blog.title }}</h3>
+        </a>
+        <a href="{% url 'blog_detail' blog.id %}" style="text-decoration:none;color:black;font-size: 13px;">
+            <p>{{ blog.content|truncatechars:200 }}</p>
+        </a>
+    </div>
         <hr>
-        <a href="{% url 'blog_detail' blog.id %}"><p>{{ blog.content|truncatechars:30 }}</p></a>
-    {% empty %}
+        {% empty %}
         <p>------暂无博客-----</p>
-    {% endfor %}
     
-    <p>共有博客 {{ blogs|length }} 篇</p>
+    {% endfor %}
+
+    <p style="margin-left: 100px;margin-right: 100px;">共有博客 {{ blogs|length }} 篇</p>
+</div>
 {% endblock %}
 
 {% block colume2 %}
-    <h4>博客分类</h4>
-    {% for blog in types %}
-        <a href="{% url 'blog_type' blog.id %}"><h4>{{ blog.type_name }}</h4></a>
-    {% empty %}
- 
-    {% endfor %}
+<h4>博客分类</h4>
+{% for blog in types %}
+<a href="{% url 'blog_type' blog.id %}">
+    <h4>{{ blog.type_name }}</h4>
+</a>
+{% empty %}
+
+{% endfor %}
 {% endblock %}
