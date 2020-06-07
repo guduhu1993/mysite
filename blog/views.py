@@ -11,7 +11,7 @@ from comment.forms import CommentForm
 def blog_list(requests):
     context = {}
     blogs_page_list = get_list_or_404(Blog)
-    paginator = Paginator(blogs_page_list, 10)
+    paginator = Paginator(blogs_page_list, 3)
     page_num = requests.GET.get('page')
     contacts = paginator.get_page(page_num)
     all_page_num = len(paginator.page_range)
@@ -20,9 +20,9 @@ def blog_list(requests):
     context['all_page_num'] = all_page_num
     if len(paginator.page_range) - 1 > int(contacts.number) > 2:
         context['current_page_list'] = [
-            i for i in range(1, int(contacts.number) + 3)]
+            i for i in range(int(contacts.number) - 2, int(contacts.number) + 3)]
     elif int(contacts.number) in [1, 2]:
-        context['current_page_list'] = range(1, all_page_num + 1)
+        context['current_page_list'] = range(1, 6)
     elif int(contacts.number) > len(paginator.page_range) - 2:
         context['current_page_list'] = range(
             all_page_num - 4, all_page_num + 1)
@@ -63,9 +63,25 @@ def blog_detail(requests, blog_id):
 
 def blog_type(requests, blog_type_id):
     context = {}
-    blog_type = get_object_or_404(BlogType, id=blog_type_id)
+    blog_type_list = get_list_or_404(Blog, blog_type = blog_type_id)
+    paginator = Paginator(blog_type_list,6)
+    current_type_page = requests.GET.get('page') if requests.GET.get('page') else 1
+    print("------",current_type_page)
+    contacts = paginator.get_page(current_type_page)
+    all_page_num = len(paginator.page_range)
+    print("======", type(contacts.number))
+    context['all_page_num'] = all_page_num
+    if all_page_num - 1 > contacts.number > 2:
+        context['current_page_list'] = [i for i in range(contacts.number - 2, contacts.number + 3)]
+    elif contacts.number in [1, 2]:
+        context['current_page_list'] = range(1, all_page_num + 1 if all_page_num <= 5 else  5)
+    elif contacts.number > len(paginator.page_range) - 2:
+        context['current_page_list'] = range(all_page_num - 4, all_page_num + 1)
     context['types'] = get_list_or_404(BlogType)
-    context['blogs'] = Blog.objects.filter(blog_type=blog_type)
+    context['next_page'] = contacts.next_page_number() if contacts.has_next() else contacts.number
+    context['previous_page'] = contacts.previous_page_number() if contacts.has_previous() else contacts.number
+    # context['blogs'] = Blog.objects.filter('blog_type')
+    context['blogs'] = contacts
     return render(requests, 'blog/blog_with_type.html', context)
 
 
@@ -75,7 +91,6 @@ def search(requests):
     blogs_page_list = Blog.objects.filter(title__icontains=search_wd)
     paginator = Paginator(blogs_page_list, 10)
     page_num = requests.GET.get('page')
-    print(page_num)
     contacts = paginator.get_page(page_num)
     all_page_num = len(paginator.page_range)
     context['search_wd'] = search_wd
@@ -84,7 +99,7 @@ def search(requests):
     context['all_page_num'] = all_page_num
     if len(paginator.page_range) - 1 > int(contacts.number) > 2:
         context['current_page_list'] = [
-            i for i in range(1, int(contacts.number) + 3)]
+            i for i in range(int(contacts.number) - 2, int(contacts.number) + 3)]
     elif int(contacts.number) in [1, 2]:
         context['current_page_list'] = range(1, all_page_num + 1)
     elif int(contacts.number) > len(paginator.page_range) - 2:

@@ -33,3 +33,23 @@
 
 {% endfor %}
 {% endblock %}
+
+{% block pagination %}
+<nav aria-label="Page navigation" style="text-align: center;">
+    <ul class="pagination">
+      <li><a href="?page={{ previous_page }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+      <li><a href="?page=1" aria-label="Previous"><span aria-hidden="true">第一页</span></a></li></li>
+      <li ><span aria-hidden="true">&nbsp;</span></li>
+      {% for page in current_page_list %}
+        {% if page_blogs.number == page %}
+          <li class="active"><span>{{ page }}</span></a></li>
+        {% else %}
+          <li><a href="?page={{ page }}" aria-label="Previous">{{ page }}</a></li>
+        {% endif %}
+      {% endfor %}
+      <li><span aria-hidden="true">&nbsp;</span></li>
+      <li><a href="?page={{ all_page_num }}" aria-label="Previous"><span aria-hidden="true">最后一页</span></a></li></li>
+      <li><a href="?page={{ next_page }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+    </ul>
+  </nav>
+  {% endblock %}  

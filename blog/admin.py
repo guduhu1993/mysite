@@ -5,8 +5,7 @@ from .models import Blog, BlogType
 
 @admin.register(Blog)
 class BlogAdmin(admin.ModelAdmin):
-    list_display = ('title', 'blog_type', 'author',
-                    'created_time', 'last_updated_time')
+    list_display = ('title', 'blog_type', 'author', 'created_time', 'last_updated_time')
 
 
 # @admin.register(BlogType)
