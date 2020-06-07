@@ -32,7 +32,8 @@ urlpatterns = [
     path('user_info/', user_info, name='user_info'),
     path('update_email/', update_email, name='update_email'),
     path('comment/', include('comment.urls')),
-    path('search/', search, name='search'),
+    # path('search/', search, name='search'),
+    path('search/', include('haystack.urls')),# 导入haystack应用的urls.py
 ]
 
 if settings.DEBUG:

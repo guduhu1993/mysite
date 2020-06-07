@@ -1,0 +1,4 @@
+{{ object.content }}
+{{ object.blog_type }}
+{{ object.title }}
+{{ object.author }}

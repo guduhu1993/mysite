@@ -5,13 +5,14 @@ import markdown
 from comment.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from comment.forms import CommentForm
+
 # Create your views here.
 
 
 def blog_list(requests):
     context = {}
     blogs_page_list = get_list_or_404(Blog)
-    paginator = Paginator(blogs_page_list, 3)
+    paginator = Paginator(blogs_page_list, 10)
     page_num = requests.GET.get('page')
     contacts = paginator.get_page(page_num)
     all_page_num = len(paginator.page_range)
@@ -64,7 +65,7 @@ def blog_detail(requests, blog_id):
 def blog_type(requests, blog_type_id):
     context = {}
     blog_type_list = get_list_or_404(Blog, blog_type = blog_type_id)
-    paginator = Paginator(blog_type_list,6)
+    paginator = Paginator(blog_type_list, 10)
     current_type_page = requests.GET.get('page') if requests.GET.get('page') else 1
     print("------",current_type_page)
     contacts = paginator.get_page(current_type_page)
@@ -88,7 +89,7 @@ def blog_type(requests, blog_type_id):
 def search(requests):
     context = {}
     search_wd = requests.GET.get('wd')
-    blogs_page_list = Blog.objects.filter(title__icontains=search_wd)
+    blogs_page_list = Blog.objects.filter(content__icontains=search_wd)
     paginator = Paginator(blogs_page_list, 10)
     page_num = requests.GET.get('page')
     contacts = paginator.get_page(page_num)
@@ -110,4 +111,8 @@ def search(requests):
     ) if contacts.has_next() else contacts.number
     context['previous_page'] = contacts.previous_page_number(
     ) if contacts.has_previous() else contacts.number
-    return render(requests, 'blog/results.html', context)
+    # context['query'] = "111111"
+    return render(requests, 'blog/search/search.html', context)
+
+def query(request):
+    return render(request,'blog/query.html')

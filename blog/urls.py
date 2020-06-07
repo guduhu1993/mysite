@@ -22,4 +22,5 @@ urlpatterns = [
     path('<int:blog_id>', views.blog_detail, name='blog_detail'),
     path('blog_type/<int:blog_type_id>', views.blog_type, name='blog_type'),
     path('search', views.search, name='search'),
+    path('query', views.query , name='query'),
 ]

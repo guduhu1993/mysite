@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block title %}Blogs{% endblock %}
 {% block colume_name %}博客列表{% endblock %}
 {% block colume1 %}
@@ -28,7 +27,7 @@
 <nav aria-label="Page navigation" style="text-align: center;">
     <ul class="pagination">
       <li><a href="?wd={{ search_wd }}&page={{ previous_page }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-      <li><a href="?wd={{ search_wd }}&page=1" aria-label="Previous"><span aria-hidden="true">d第一页</span></a></li></li>
+      <li><a href="?wd={{ search_wd }}&page=1" aria-label="Previous"><span aria-hidden="true">第一页</span></a></li></li>
       <li ><span aria-hidden="true">&nbsp;</span></li>
       {% for page in current_page_list %}
         {% if page_blogs.number == page %}
