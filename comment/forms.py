@@ -42,5 +42,4 @@ class CommentForm(forms.Form):
                 id=reply_comment_id)
         else:
             raise forms.ValidationError('回复出错')
-        print(22222222222)
         return reply_comment_id

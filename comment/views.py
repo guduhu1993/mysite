@@ -38,7 +38,6 @@ def update_comment(request):
         comment.user = comment_form.cleaned_data['user']
         comment.text = comment_form.cleaned_data['text']
         comment.Content_object = comment_form.cleaned_data['content_object']
-        
         parent = comment_form.cleaned_data['parent']
         if parent:
             comment.root = parent.root if parent.root else parent

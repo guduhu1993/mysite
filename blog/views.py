@@ -14,6 +14,7 @@ def blog_list(requests):
     context={}
     jwt_token=requests.COOKIES.get('jwt_token')
     result=parse_payload(jwt_token)
+    print(jwt_token)
     if result['error']:
         context['massage'] = result['error']
         context['referer_to'] = 'login'

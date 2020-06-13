@@ -2,13 +2,15 @@
 {% block title %}Blog Details{% endblock %}
 {% block colume_name %}博客详情{% endblock %}
 {% block colume1 %}
-<h3>{{ blog.title }}<span class="label label-default">New</span></h3>
-<p>作者： {{ blog.author }} </p>
-<p>发表日期：{{ blog.created_time|date:"Y-m-d G:n:s" }}</p>
-<a href="{% url 'blog_type' blog.blog_type.id %}">
-    <p>类型：{{ blog.blog_type }}</p>
-</a>
-<p>{{ blog_content|safe }}</p>
+<div style="margin-left: 100px;margin-right: 100px;">
+    <h3>{{ blog.title }}<span class="label label-default">New</span></h3>
+    <p>作者： {{ blog.author }} </p>
+    <p>发表日期：{{ blog.created_time|date:"Y-m-d G:n:s" }}</p>
+    <a href="{% url 'blog_type' blog.blog_type.id %}">
+        <p>类型：{{ blog.blog_type }}</p>
+    </a>
+    <p>{{ blog_content|safe }}</p>
+</div>
 {% endblock %}
 
 {% block colume2 %}
@@ -25,11 +27,11 @@
 <nav aria-label="...">
     <ul class="pager">
         {% if previous_blog %}
-        <li><a href="{% url 'blog_detail' previous_blog.id %}">上一篇&nbsp;{{ previous_blog.title }}</a></li>
+        <li><a href="{% url 'blog_detail' previous_blog.id %}"><<&nbsp; &nbsp;{{ previous_blog.title }}</a></li>
         {% endif %}
-        <li><br></li>
+        <li>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;</li>
         {% if next_blog %}
-        <li><a href="{% url 'blog_detail' next_blog.id %}">下一篇&nbsp;{{ next_blog.title }}</a></li>
+        <li><a href="{% url 'blog_detail' next_blog.id %}">>>&nbsp; &nbsp;{{ next_blog.title }}</a></li>
         {% endif %}
     </ul>
 </nav>
@@ -40,7 +42,6 @@
     <div>
         <div style="margin: 2em;border: 1px dashed;padding: 2em;">
             {% if user.is_authenticated %}
-            已登陆
             <form id='comments_form' action="{% url 'update_comment' %}" method="POST">
                 {% csrf_token %}
                 {{ comments_form }}
@@ -57,29 +58,48 @@
 </div>
 <div class="row">
     <div>
+        {% if comments %}
         <div style="margin: 2em;border: 1px dashed;padding: 2em;">
+            
             <div id='comment_list'>
                 {% for comment in comments %}
-                    <div class="comment">
-                        {{ blog.user }}<br>
+                    <ul class="comment">
+                        {{ blog.author }}&nbsp;&nbsp发表于:
                         {{ comment.created_time }}<br>
-                        {{ comment.text | safe }}
+                        {{ comment.text | safe }}<br>
+                        <div style="float:right">
                         <a href="javascript:reply({{ comment.id }})">回复</a>
-                        {% for reply in comment.root_comment.all %}
-                            <div class="reply">
-                                {{ reply.user.usernaem }}
-                                {{ reply.created_time }}
-                                回复
-                                {{ reply.text }}
-                                <a href="javascript:reply({{ comment.id }})">回复</a>
-                            </div>
-                        {% endfor %}
-                    </div>
+                        
+                        </div><br>
+                        <!-- <HR align=left width=300 color=#987cb9 SIZE=1> -->
+                        {% if comment.root_comment.all %}
+                            <ul style="border:1px solid rgba(153, 153, 153, 0);padding:9px;">
+                            {% for reply in comment.root_comment.all %}
+                                <li class="reply"  style="border:1px solid #999;padding:9px;">
+                                    {{ reply.user.username }}
+                                    {{ reply.created_time }}
+                                    <br>
+                                    {{ reply.text }}<br>
+                                    <div style="float:right">
+                                        <a href="javascript:reply({{ comment.id }})">回复</a>
+                                    </div>
+                                    <br>
+                                    <!-- <HR align=left width=300 color=#987cb9 SIZE=1> -->
+                                </li>
+                            {% endfor %}
+                            </ul>
+                            {% else %}
+                            {% endif %}
+                    </ul>
+                    <HR>
                 {% empty %}
                 无
                 {% endfor %}
+               
             </div>
-        </div>
+            
+        </div>{% else %}
+        {% endif %}
     </div>
 </div>
 {% endblock %}
