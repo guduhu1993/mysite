@@ -20,6 +20,7 @@ from .views import home,login,register,logout,user_info,update_email
 from django.conf.urls.static import static
 from django.conf import settings
 from blog.views import search
+from rest_framework_jwt.views import obtain_jwt_token
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,6 +35,7 @@ urlpatterns = [
     path('comment/', include('comment.urls')),
     # path('search/', search, name='search'),
     path('search/', include('haystack.urls')),# 导入haystack应用的urls.py
+    #path('get_token/', obtain_jwt_token)
 ]
 
 if settings.DEBUG:

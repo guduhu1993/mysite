@@ -1,15 +1,23 @@
-from django.shortcuts import render, get_object_or_404, get_list_or_404
+from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from .models import Blog, BlogType
 from django.core.paginator import Paginator
 import markdown
 from comment.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from comment.forms import CommentForm
+from mysite.views import parse_payload
 
 # Create your views here.
 
 
 def blog_list(requests):
+    context={}
+    jwt_token=requests.COOKIES.get('jwt_token')
+    result=parse_payload(jwt_token)
+    if result['error']:
+        context['massage'] = result['error']
+        context['referer_to'] = 'login'
+        return render(requests, 'error.html', context)
     context = {}
     blogs_page_list = get_list_or_404(Blog)
     paginator = Paginator(blogs_page_list, 10)
@@ -83,6 +91,7 @@ def blog_type(requests, blog_type_id):
     context['previous_page'] = contacts.previous_page_number() if contacts.has_previous() else contacts.number
     # context['blogs'] = Blog.objects.filter('blog_type')
     context['blogs'] = contacts
+    context['all_blogs_number'] = blog_type_list
     return render(requests, 'blog/blog_with_type.html', context)
 
 
@@ -111,7 +120,6 @@ def search(requests):
     ) if contacts.has_next() else contacts.number
     context['previous_page'] = contacts.previous_page_number(
     ) if contacts.has_previous() else contacts.number
-    # context['query'] = "111111"
     return render(requests, 'blog/search/search.html', context)
 
 def query(request):

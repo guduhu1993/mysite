@@ -3,6 +3,9 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from .form import Loginform, Registerform, UpdateEmail
 from django.urls import reverse
+import datetime
+import jwt
+from jwt import exceptions
 # Create your views here.
 
 
@@ -11,6 +14,37 @@ def home(requests):
     context['hello'] = '欢迎光临我的博客'
     return render(requests, 'home.html', context)
 
+SALT='sadffffffffpp0'
+def create_token():
+    # 构造headers
+    headers = {'typ': 'jwt', 'alg': 'HS256'}
+    # 构造payload
+    payload = {
+        'user_id': 1, # 自定义用户ID
+        'username': 'wupeiqi', # 自定义用户名
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=3000) # 超时时间
+    }
+    result = jwt.encode(payload=payload, key=SALT, algorithm="HS256", headers=headers).decode('utf-8')
+    return result
+
+def parse_payload(token):
+    """
+    对token进行和发行校验并获取payload
+    :param token:
+    :return:
+    """
+    result = {'status': False, 'data': None, 'error': None}
+    try:
+        verified_payload = jwt.decode(token, SALT, True)
+        result['status'] = True
+        result['data'] = verified_payload
+    except exceptions.ExpiredSignatureError:
+        result['error'] = 'token已失效'
+    except jwt.DecodeError:
+        result['error'] = 'token认证失败'
+    except jwt.InvalidTokenError:
+        result['error'] = '非法的token'
+    return result
 
 def login(requests):
     if requests.method == "POST":
@@ -18,8 +52,11 @@ def login(requests):
         if login_form.is_valid():
             user = login_form.cleaned_data['user']
             auth.login(requests, user)
+            result=create_token()
             print(requests.GET.get('from'))
-            return redirect(requests.GET.get('from', reverse('home')))
+            response=redirect(requests.GET.get('from', reverse('home')))
+            response.set_cookie('jwt_token', result, max_age=10000)
+            return response
     else:
         login_form = Loginform()
     context = {}
@@ -40,7 +77,10 @@ def register(requests):
             # 登录
             user = auth.authenticate(username=username, password=password)
             auth.login(requests, user)
-            return redirect(requests.GET.get('from', reverse('home')))
+            result=create_token()
+            response = redirect(requests.GET.get('from', reverse('home')))
+            response.set_cookie('jwt_token', result, max_age=10000)
+            return response
     else:
         register_form = Registerform()
     context = {}
@@ -74,3 +114,16 @@ def update_email(requests):
     return render(requests, 'update_email.html', context)
 
 
+def post(self, requests):
+    user_name = requests.GET.get('username')
+    password = requests.GET.get('password')
+    token_payload = {}
+    login_form = Loginform(requests.POST)
+    if login_form.is_valid():
+        user = login_form.cleaned_data['user']
+        password = login_form.cleaned_data['password']
+        # 构造header
+        token_header = {'alg':'HS256', 'typ':"jwt"}
+        # 构造payload
+        token_payload['exp'] = datetime.datetime.utcnow() + datetime.timedelta(minutes=2)
+        token = jwt.encode(headers=token_header, payload=token_payload, key=SALT, algorithm='HS256').decode('utf-8')

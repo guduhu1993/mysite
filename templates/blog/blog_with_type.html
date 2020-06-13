@@ -19,7 +19,7 @@
     
     {% endfor %}
 
-    <p style="margin-left: 100px;margin-right: 100px;">共有博客 {{ blogs|length }} 篇</p>
+    <p style="margin-left: 100px;margin-right: 100px;">共有博客 {{ all_blogs_number|length }} 篇</p>
 </div>
 {% endblock %}
 
@@ -52,4 +52,4 @@
       <li><a href="?page={{ next_page }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
     </ul>
   </nav>
-  {% endblock %}  
+  {% endblock %}
