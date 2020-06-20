@@ -8,21 +8,29 @@ import jwt
 from jwt import exceptions
 # Create your views here.
 
+def login_required(func):
+    def wrapper(requests, *args, **kwargs):
+        jwt_token = requests.COOKIES.get('jwt_token')
+        result = parse_payload(jwt_token)
+        if result['error']:
+            return redirect('login')
+        return func(requests, *args, **kwargs)
+    return wrapper
 
 def home(requests):
     context = {}
     context['hello'] = '欢迎光临我的博客'
     return render(requests, 'home.html', context)
 
-SALT='sadffffffffpp0'
-def create_token():
+SALT='sadfffff09fffpp0'
+def create_token(expire_time):
     # 构造headers
     headers = {'typ': 'jwt', 'alg': 'HS256'}
     # 构造payload
     payload = {
         'user_id': 1, # 自定义用户ID
         'username': 'wupeiqi', # 自定义用户名
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=3000) # 超时时间
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=expire_time) # 超时时间
     }
     result = jwt.encode(payload=payload, key=SALT, algorithm="HS256", headers=headers).decode('utf-8')
     return result
@@ -52,7 +60,7 @@ def login(requests):
         if login_form.is_valid():
             user = login_form.cleaned_data['user']
             auth.login(requests, user)
-            result=create_token()
+            result=create_token(2)
             print(requests.GET.get('from'))
             response=redirect(requests.GET.get('from', reverse('home')))
             response.set_cookie('jwt_token', result, max_age=10000)
@@ -77,7 +85,7 @@ def register(requests):
             # 登录
             user = auth.authenticate(username=username, password=password)
             auth.login(requests, user)
-            result=create_token()
+            result=create_token(2)
             response = redirect(requests.GET.get('from', reverse('home')))
             response.set_cookie('jwt_token', result, max_age=10000)
             return response
@@ -90,7 +98,11 @@ def register(requests):
 
 def logout(requests):
     auth.logout(requests)
-    return redirect(requests.GET.get('from', reverse('home')))
+    result=create_token(0)
+    print(requests.GET.get('from'))
+    response = redirect(requests.GET.get('from', reverse('home')))
+    response.set_cookie('jwt_token', result, max_age=10000)
+    return response
 
 
 def user_info(requests):

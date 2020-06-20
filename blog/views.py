@@ -6,19 +6,19 @@ from comment.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from comment.forms import CommentForm
 from mysite.views import parse_payload
+from mysite.views import login_required
 
 # Create your views here.
 
-
+@login_required
 def blog_list(requests):
-    context={}
-    jwt_token=requests.COOKIES.get('jwt_token')
-    result=parse_payload(jwt_token)
-    print(jwt_token)
-    if result['error']:
-        context['massage'] = result['error']
-        context['referer_to'] = 'login'
-        return render(requests, 'error.html', context)
+    # jwt_token=requests.COOKIES.get('jwt_token')
+    # result=parse_payload(jwt_token)
+    # print(jwt_token)
+    # if result['error']:
+    #     context['massage'] = result['error']
+    #     context['referer_to'] = 'login'
+    #     return redirect('login')
     context = {}
     blogs_page_list = get_list_or_404(Blog)
     paginator = Paginator(blogs_page_list, 10)
@@ -43,8 +43,8 @@ def blog_list(requests):
     ) if contacts.has_previous() else contacts.number
     return render(requests, 'blog/blogs_list.html', context)
 
-
-def blog_detail(requests, blog_id):
+@login_required
+def blog_detail(requests,blog_id):
     context = {}
     blog = get_object_or_404(Blog, id=blog_id)
     context['blog'] = blog
@@ -70,7 +70,7 @@ def blog_detail(requests, blog_id):
     context['comments_form'] = CommentForm(initial=data)
     return render(requests, 'blog/blog_detail.html', context)
 
-
+@login_required
 def blog_type(requests, blog_type_id):
     context = {}
     blog_type_list = get_list_or_404(Blog, blog_type = blog_type_id)
@@ -95,7 +95,7 @@ def blog_type(requests, blog_type_id):
     context['all_blogs_number'] = blog_type_list
     return render(requests, 'blog/blog_with_type.html', context)
 
-
+@login_required
 def search(requests):
     context = {}
     search_wd = requests.GET.get('wd')
@@ -123,5 +123,6 @@ def search(requests):
     ) if contacts.has_previous() else contacts.number
     return render(requests, 'blog/search/search.html', context)
 
+@login_required
 def query(request):
     return render(request,'blog/query.html')
