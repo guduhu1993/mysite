@@ -3,6 +3,7 @@
 {% block colume_name %}搜索"{{ query }}"结果{% endblock %}
 {% block colume1 %}
 <div>
+<div>
     {% for blog in page %}
     <div style="margin-left: 100px;margin-right: 100px;">
     <a href="{% url 'blog_detail' blog.object.id %}" style="text-decoration:none;"><h3>{{ blog.object.title }}</h3></a>
@@ -17,17 +18,18 @@
 </div>
 {% endblock %}
 
-{% block right_colume %}
-    <!-- {% for blog in page %}
+<!-- <div hidden>{% block right_colume %}
+    {% for blog in page %}
     <a href="{% url 'blog_type' blog.object.blog_type.id %}"><h4>{{ page.object.blog_type }}</h4></a>
     {% empty %}
-    {% endfor %} -->
+    {% endfor %}
 {% endblock %}
+</div> -->
 {% block pagination %}
-<nav aria-label="Page navigation" style="text-align: center;">
+<nav aria-label="Page navigation" style="text-align: center">
     <ul class="pagination">
       <li><a href="?q={{ query }}&page=1" aria-label="Previous"><span aria-hidden="true">第一页</span></a></li></li>
-      <li ><span aria-hidden="true">&nbsp;</span></li>
+      <!-- <li ><span aria-hidden="true">&nbsp;</span></li> -->
       {% for paginx in page.paginator.page_range %}
         {% if page.number == paginx %}
           <li class="active"><span>{{ paginx }}</span></a></li>
@@ -35,8 +37,9 @@
           <li><a href="?q={{ query }}&page={{ paginx }}" aria-label="Previous">{{ paginx }}</a></li>
         {% endif %}
       {% endfor %}
-      <li><span aria-hidden="true">&nbsp;</span></li>
+      <!-- <li><span aria-hidden="true">&nbsp;</span></li> -->
       <li><a href="?q={{ query }}&page={{ page.paginator.page_range|length }}" aria-label="Previous"><span aria-hidden="true">最后一页</span></a></li></li>
     </ul>
   </nav>
   {% endblock %}
+</div>

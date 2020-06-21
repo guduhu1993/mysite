@@ -3,9 +3,36 @@
 {% block title %}login{% endblock %}
 
 {% block content %}
-<form action="#" method="POST">
+<center>
+<form class="form-inline" method="POST">
     {% csrf_token %}
-    {{ register_form }}
-    <input type="submit" value="注册">
+    <div class="form-group has-success has-feedback">
+        <label class="control-label" for="inputSuccess4">请输入账号</label>
+        {{ register_form.username }}
+    </div>
+    <br>
+    <br>
+    <div class="form-group has-success has-feedback">
+        <label class="control-label" for="inputSuccess4">请输入邮箱</label>
+        {{ register_form.email }}
+    </div>
+    <br>
+    <br>
+    <div class="form-group has-success has-feedback">
+        <label class="control-label" for="inputSuccess4">请输入密码</label>
+        {{ register_form.password }}
+    </div>
+    <br>
+    <br>
+    <div class="form-group has-success has-feedback">
+        <label class="control-label" for="inputSuccess4">再输入密码</label>
+        {{ register_form.password_again }}
+    </div>
+    <br>
+    <br>
+    <div class="form-group has-success has-feedback">
+        <input class="btn btn-default" type="submit" value="注册">
+    </div>
 </form>
+</center>
 {% endblock %}

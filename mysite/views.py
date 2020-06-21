@@ -62,7 +62,11 @@ def login(requests):
             auth.login(requests, user)
             result=create_token(2)
             print(requests.GET.get('from'))
-            response=redirect(requests.GET.get('from', reverse('home')))
+            if not requests.GET.get('from') in ['/register/','/login/']:
+                redirect_url = requests.GET.get('from', reverse('home'))
+            else:
+                redirect_url =  requests.GET.get('home', reverse('home'))
+            response=redirect(redirect_url)
             response.set_cookie('jwt_token', result, max_age=10000)
             return response
     else:
@@ -86,7 +90,12 @@ def register(requests):
             user = auth.authenticate(username=username, password=password)
             auth.login(requests, user)
             result=create_token(2)
-            response = redirect(requests.GET.get('from', reverse('home')))
+            if not requests.GET.get('from') in ['/register/','/login/']:
+                redirect_url = requests.GET.get('from', reverse('home'))
+            else:
+                redirect_url =  requests.GET.get('home', reverse('home'))
+            response=redirect(redirect_url)
+            # response = redirect(requests.GET.get('from', reverse('home')))
             response.set_cookie('jwt_token', result, max_age=10000)
             return response
     else:

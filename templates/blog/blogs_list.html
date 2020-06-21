@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Blogs{% endblock %}
 {% block colume_name %}博客列表{% endblock %}
+<div>
 {% block colume1 %}
 <div>
     {% for blog in page_blogs %}
@@ -16,7 +17,7 @@
   </div>
 {% endblock %}
 
-{% block colume2 %}   
+{% block colume2 %}  
     {% for blog in types %}
         <a href="{% url 'blog_type' blog.id %}"><h4>{{ blog.type_name }}</h4></a>
     {% empty %}
@@ -41,3 +42,4 @@
     </ul>
   </nav>
   {% endblock %}  
+ </div>
