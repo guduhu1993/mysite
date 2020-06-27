@@ -1,11 +1,12 @@
 from django import forms
 from django.contrib import auth
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from users.models import User
 
 
 class Loginform(forms.Form):
     username = forms.CharField(label='用户名', widget=forms.TextInput(
-        attrs={"class": "form-control", "placehoder": "请输入用户名"}))
+        attrs={"class": "form-control", "placehoder": "Default input"}))
     password = forms.CharField(label='密码', widget=forms.PasswordInput(attrs={"class": "form-control", "placehoder": "密码"}))
 
     def clean(self):
@@ -23,6 +24,10 @@ class Loginform(forms.Form):
 class Registerform(forms.Form):
     username = forms.CharField(label='用户名', max_length=30, min_length=3, required=True, widget=forms.TextInput(
         attrs={"class": "form-control", "placehoder": "请输入用户名"}))
+    mobile = forms.CharField(label='用户名', max_length=11, min_length=11, required=True, widget=forms.TextInput(
+        attrs={"class": "form-control", "placehoder": "请输入手机号"}))
+    verify_pic = forms.CharField(label='用户名', max_length=30, min_length=3, required=True, widget=forms.TextInput(
+        attrs={"class": "form-control", "placehoder": "输入验证码", "onchange": "verify_code(this);"}))
     email = forms.EmailField(
         label='邮箱', max_length=30, min_length=3,
         widget=forms.EmailInput(attrs={"class": "form-control", "placehoder": "请输入邮箱"}))

@@ -7,7 +7,7 @@ from .models import Comment
 class CommentForm(forms.Form):
     content_type = forms.CharField(widget=forms.HiddenInput)
     object_id = forms.IntegerField(widget=forms.HiddenInput)
-    text = forms.CharField(widget=forms.Textarea,
+    text = forms.CharField(label="", widget=forms.Textarea(attrs={"class":"form-control", "placeholder":""}),
                            error_messages={'required': '评论内容不能为空'})
     reply_comment_id = forms.IntegerField(
         widget=forms.HiddenInput(attrs={'id': 'reply_comment_id'}))

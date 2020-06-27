@@ -32,7 +32,7 @@ def blog_list(requests):
         context['current_page_list'] = [
             i for i in range(int(contacts.number) - 2, int(contacts.number) + 3)]
     elif int(contacts.number) in [1, 2]:
-        context['current_page_list'] = range(1, 6)
+        context['current_page_list'] = range(1, len(paginator.page_range)+1)
     elif int(contacts.number) > len(paginator.page_range) - 2:
         context['current_page_list'] = range(
             all_page_num - 4, all_page_num + 1)
@@ -76,10 +76,10 @@ def blog_type(requests, blog_type_id):
     blog_type_list = get_list_or_404(Blog, blog_type = blog_type_id)
     paginator = Paginator(blog_type_list, 10)
     current_type_page = requests.GET.get('page') if requests.GET.get('page') else 1
-    print("------",current_type_page)
+    # print("------",current_type_page)
     contacts = paginator.get_page(current_type_page)
     all_page_num = len(paginator.page_range)
-    print("======", type(contacts.number))
+    # print("======", type(contacts.number))
     context['all_page_num'] = all_page_num
     if all_page_num - 1 > contacts.number > 2:
         context['current_page_list'] = [i for i in range(contacts.number - 2, contacts.number + 3)]

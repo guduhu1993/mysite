@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['lovsld.pythonanywhere.com', '127.0.0.1']
 
+AUTH_USER_MODEL = 'users.User'
 
 # Application definition
 
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'mdeditor',
     'comment',
     'haystack',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -142,3 +144,5 @@ HAYSTACK_CONNECTIONS = {
 }
 #当添加、修改、删除数据时，自动生成索引
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+SALT='sadfffff09fffph咯p@0'

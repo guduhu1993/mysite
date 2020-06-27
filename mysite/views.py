@@ -1,11 +1,18 @@
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from django.contrib import auth
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from users.models import User
 from .form import Loginform, Registerform, UpdateEmail
 from django.urls import reverse
 import datetime
 import jwt
 from jwt import exceptions
+from .settings import SALT
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from rest_framework.views import APIView
+from django.http import HttpResponse, JsonResponse
+from mysite.gen_pic import GenPic
+import json
 # Create your views here.
 
 def login_required(func):
@@ -22,7 +29,7 @@ def home(requests):
     context['hello'] = '欢迎光临我的博客'
     return render(requests, 'home.html', context)
 
-SALT='sadfffff09fffpp0'
+
 def create_token(expire_time):
     # 构造headers
     headers = {'typ': 'jwt', 'alg': 'HS256'}
@@ -148,3 +155,42 @@ def post(self, requests):
         # 构造payload
         token_payload['exp'] = datetime.datetime.utcnow() + datetime.timedelta(minutes=2)
         token = jwt.encode(headers=token_header, payload=token_payload, key=SALT, algorithm='HS256').decode('utf-8')
+
+class ImageCodeView(APIView):
+    """
+    图片验证码
+    """
+    def get(self, request, pic_id):
+        """
+        获取图片验证码
+        """
+        print(pic_id)
+        # 生成验证码图片
+        genpic = GenPic()
+        text, image = genpic.gene_code(request)
+        # 固定返回验证码图片数据，不需要REST framework框架的Response帮助我们决定返回响应数据的格式
+        # 所以此处直接使用Django原生的HttpResponse即可
+        print(text.lower())
+        with open("dictionary.json","r") as f:
+            pic_dic = json.loads(f.read())
+            pic_dic[pic_id] = text.lower()
+        with open("dictionary.json","w") as f:
+            f.write(json.dumps(pic_dic))
+        return HttpResponse(image, content_type="images/png")
+
+class VerifyPic(APIView):
+    # 验证手机号规范、用户名规范是否已存在、验证码正确性、邮箱规范是否已存在
+    def post(self,request,pic_id):
+        data = {}
+        print('------',pic_id)
+        print('======',request.POST.get('pic_str'))
+        with open("dictionary.json","r") as f:
+            pic_code_dic = json.loads(f.read())
+            # print('******',pic_code_dic)
+            # print('+++++++',pic_code_dic[str(pic_id)])
+        if pic_code_dic[str(pic_id)] == request.POST.get('pic_str').lower():
+            data['status'] = 'SUCCESS'
+        else:
+            data['status'] = 'ERROR'
+        return JsonResponse(data)
+    

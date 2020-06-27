@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Blog Details{% endblock %}
+
 {% block colume_name %}博客详情{% endblock %}
+
 {% block colume1 %}
 <div style="margin-left: 100px;margin-right: 100px;">
     <h3>{{ blog.title }}</h3>
@@ -13,15 +15,6 @@
 </div>
 {% endblock %}
 
-{% block colume2 %}
-<h4>博客分类</h4>
-{% for blog in types %}
-<a href="{% url 'blog_type' blog.id %}">
-    <h4>{{ blog.type_name }}</h4>
-</a>
-{% empty %}
-{% endfor %}
-{% endblock %}
 
 {% block pagination %}
 <nav aria-label="...">
@@ -42,10 +35,17 @@
     <div>
         <div style="margin-left: 15em;border: 0px dashed;padding: 2em;">
             {% if user.is_authenticated %}
+            
             <form id='comments_form' action="{% url 'update_comment' %}" method="POST">
                 {% csrf_token %}
-                {{ comments_form }}
-                <input type="submit" value="提交">
+                <div class="col-xs-7">
+                    <label class="control-label" for="inputSuccess4"></label>
+                    {{ comments_form }}
+                    <br>
+                    <input class="btn btn-default" type="submit" value="提交">
+                </div>
+
+                
             </form>
             {% else %}
             <a href="{% url 'login' %}?from={{ request.get_full_path }}">登录</a>
@@ -60,7 +60,6 @@
     <div>
         {% if comments %}
         <div style="margin-left: 11.5em;margin-right: 350px;border: 0px dashed;padding: 2em;">
-            
             <div id='comment_list'>
                 {% for comment in comments %}
                     <ul class="comment">
@@ -69,7 +68,6 @@
                         {{ comment.text | safe }}<br>
                         <div style="float:right">
                         <a href="javascript:reply({{ comment.id }})">回复</a>
-                        
                         </div><br>
                         <!-- <HR align=left width=300 color=#987cb9 SIZE=1> -->
                         {% if comment.root_comment.all %}
@@ -79,7 +77,7 @@
                                     {{ reply.user.username }}
                                     {{ reply.created_time }}
                                     <br>
-                                    {{ reply.text }}<br>
+                                    {{ reply.text|safe }}<br>
                                     <div style="float:right">
                                         <a href="javascript:reply({{ comment.id }})">回复</a>
                                     </div>
@@ -95,13 +93,21 @@
                 {% empty %}
                 无
                 {% endfor %}
-               
             </div>
-            
         </div>{% else %}
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block colume2 %}
+<h4>博客分类</h4>
+{% for blog in types %}
+<a href="{% url 'blog_type' blog.id %}">
+    <h4>{{ blog.type_name }}</h4>
+</a>
+{% empty %}
+{% endfor %}
 {% endblock %}
 {% block script %}
 <script type="text/javascript">
@@ -116,8 +122,6 @@
             success: function (data) {
                 if (data['status'] == 'SUCCESS') {
                     $("#comments_form").empty();
-                    // var comment_html = '<div>'+data["username"]+'('+data["comment_time"]+')'+data["text"]+'</div>';
-                    // $("#comment_list").prepend(comment_html);
                     window.location.reload()
                 }
             },

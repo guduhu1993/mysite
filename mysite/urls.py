@@ -16,11 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from blog.views import blog_list
-from .views import home,login,register,logout,user_info,update_email
+from .views import home,login,register,logout,user_info,update_email,ImageCodeView,VerifyPic
 from django.conf.urls.static import static
 from django.conf import settings
 from blog.views import search
 from rest_framework_jwt.views import obtain_jwt_token
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,7 +36,9 @@ urlpatterns = [
     path('comment/', include('comment.urls')),
     # path('search/', search, name='search'),
     path('search/', include('haystack.urls')),# 导入haystack应用的urls.py
-    #path('get_token/', obtain_jwt_token)
+    #path('get_token/', obtain_jwt_token),
+    path('image_codes/<int:pic_id>', ImageCodeView.as_view(), name='image_codes'),
+    path('verify_pic/<int:pic_id>', VerifyPic.as_view(), name='verify_pic'),
 ]
 
 if settings.DEBUG:

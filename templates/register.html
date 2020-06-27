@@ -13,6 +13,19 @@
     <br>
     <br>
     <div class="form-group has-success has-feedback">
+        <label class="control-label" for="inputSuccess4">请输入手机</label>
+        {{ register_form.mobile }}
+    </div>
+    <br>
+    <br>
+    <div id="verify_pic_code" class="form-group has-success has-feedback">
+        <label class="control-label" for="inputSuccess4">验证码</label>
+        {{ register_form.verify_pic }}
+    </div>
+    <img id="codepic" onclick="refreshcode(this);"/>
+    <br>
+    <br>
+    <div class="form-group has-success has-feedback">
         <label class="control-label" for="inputSuccess4">请输入邮箱</label>
         {{ register_form.email }}
     </div>
@@ -35,4 +48,51 @@
     </div>
 </form>
 </center>
+{% endblock %}
+
+{% block script %}
+<script>
+    var code_id;
+    function RndNum(n){
+    var rnd="";
+    for(var i=0;i<n;i++)
+        rnd	+=	Math.floor(Math.random()*10);
+    return rnd;
+    };
+    window.onload(refreshcode());
+    function refreshcode(ths){
+        code_id = RndNum(5);
+        var url = "{% url 'image_codes' '1' %}".replace("1",code_id);
+        $.ajax({
+                // url: "",
+                // data: {},
+                success: function(data, statusText, xmlHttpRequest){
+                    document.getElementById("codepic").src=url;
+                    console.log(data);
+                    ths.src += '?';
+                    },
+                error: function(xmlHttpRequest, statusText, errorThrown){}});};
+
+    function verify_code(ths){
+        var verify_code = document.getElementById("id_verify_pic");
+        // alert(verify_code.value);
+        $.ajax({
+                url: "{% url 'verify_pic' '1' %}".replace('1', code_id),
+                data: {pic_str:verify_code.value},
+                type: "POST",
+                dataType: "json",
+                success: function (data) {
+                if (data['status'] == 'SUCCESS') {
+                    document.getElementById("verify_pic_code").className="form-group has-success has-feedback"
+                };
+                if (data['status'] == 'ERROR') {
+                    document.getElementById("verify_pic_code").className="form-group has-error has-feedback"
+                    // alert('error');
+                }
+            },
+            error: function (xhr) {
+                console.log(xhr);
+            }
+    })};
+</script>
 {% endblock %}
