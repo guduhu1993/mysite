@@ -12,13 +12,14 @@
     <div id="id_verify_username" class="form-group has-success has-feedback">
         <label class="control-label" for="inputSuccess4">请输入账号</label>
         {{ register_form.username }}
-        <span id='id_username_span'></span>
+        <span id='id_username_span'>{{ register_form.errors.username.0 }}</span>
     </div>
     <br>
     <br>
-    <div class="form-group has-success has-feedback">
+    <div id="id_verify_mobile" class="form-group has-success has-feedback">
         <label class="control-label" for="inputSuccess4">请输入手机</label>
         {{ register_form.mobile }}
+        <span id='id_mobile_span'>{{ register_form.errors.mobile.0 }}</span>
     </div>
     <br>
     <br>
@@ -29,26 +30,30 @@
     <img id="codepic" onclick="refreshcode(this);"/>
     <br>
     <br>
-    <div class="form-group has-success has-feedback">
+    <div id="id_verify_email" class="form-group has-success has-feedback">
         <label class="control-label" for="inputSuccess4">请输入邮箱</label>
         {{ register_form.email }}
+        <span id='id_email_span'>{{ register_form.errors.email.0 }}</span>
     </div>
     <br>
     <br>
-    <div class="form-group has-success has-feedback">
+    <div id="id_verify_password" class="form-group has-success has-feedback">
         <label class="control-label" for="inputSuccess4">请输入密码</label>
         {{ register_form.password }}
+        <span id='id_password_span'></span>
     </div>
     <br>
     <br>
-    <div class="form-group has-success has-feedback">
+    <div id="id_verify_password_again" class="form-group has-success has-feedback">
         <label class="control-label" for="inputSuccess4">再输入密码</label>
         {{ register_form.password_again }}
+        <span id='id_password_again_span'></span>
     </div>
     <br>
     <br>
     <div class="form-group has-success has-feedback">
         <input class="btn btn-default" type="submit" value="注册">
+        <!-- <span>{{ register_form.errors.username }}</span> -->
     </div>
 </form>
 </center>
@@ -56,6 +61,7 @@
 
 {% block script %}
 <script>
+
     var code_id;
     function RndNum(n){
     var rnd="";
@@ -69,8 +75,6 @@
         code_id = RndNum(5);
         var url = "{% url 'image_codes' '1' %}".replace("1",code_id);
         $.ajax({
-                // url: "",
-                // data: {},
                 success: function(data, statusText, xmlHttpRequest){
                     document.getElementById("codepic").src=url;
                     console.log(data);
@@ -80,7 +84,6 @@
     // 验证码验证
     function verify_code(ths){
         var verify_code = document.getElementById("id_verify_pic");
-        // alert(verify_code.value);
         $.ajax({
                 url: "{% url 'image_codes' '1' %}".replace('1', code_id),
                 data: {pic_str:verify_code.value},
@@ -103,14 +106,12 @@
     // 用户名验证
     function verify_username(ths){
         var verify_username = document.getElementById("id_username");
-        // alert(verify_code.value);
         $.ajax({
                 url: "{% url 'verify' %}",
-                data: {username:verify_username.value},
+                data: {username:verify_username.value,'verify_name':"username"},
                 type: "POST",
                 dataType: "json",
                 success: function (data) {
-                    // alert(data['status'])
                 if (data['status'] == 'SUCCESS') {
                     document.getElementById("id_verify_username").className="form-group has-success has-feedback"};
                     document.getElementById("id_username_span").innerHTML='';
@@ -125,5 +126,95 @@
             }
     })};
 
+    // 手机号验证
+    function verify_mobile(ths){
+        var verify_mobile = document.getElementById("id_mobile");
+        $.ajax({
+                url: "{% url 'verify' %}",
+                data: {mobile:verify_mobile.value,'verify_name':"mobile"},
+                type: "POST",
+                dataType: "json",
+                success: function (data) {
+                if (data['status'] == 'SUCCESS') {
+                    document.getElementById("id_verify_mobile").className="form-group has-success has-feedback"};
+                    document.getElementById("id_mobile_span").innerHTML='';
+                if (data['status'] == 'ERROR') {
+                    document.getElementById("id_verify_mobile").className="form-group has-error has-feedback";
+                    document.getElementById("id_mobile_span").innerHTML=data['massage'];
+                    };
+                    
+            },
+            error: function (xhr) {
+                console.log(xhr);
+            }
+    })};
+
+    // 邮箱验证
+    function verify_email(ths){
+        var verify_email = document.getElementById("id_email");
+        $.ajax({
+                url: "{% url 'verify' %}",
+                data: {email:verify_email.value,'verify_name':"email"},
+                type: "POST",
+                dataType: "json",
+                success: function (data) {
+                if (data['status'] == 'SUCCESS') {
+                    document.getElementById("id_verify_email").className="form-group has-success has-feedback"};
+                    document.getElementById("id_email_span").innerHTML='';
+                if (data['status'] == 'ERROR') {
+                    document.getElementById("id_verify_email").className="form-group has-error has-feedback";
+                    document.getElementById("id_email_span").innerHTML=data['massage'];
+                    };
+                    
+            },
+            error: function (xhr) {
+                console.log(xhr);
+            }
+    })};
+
+    // 密码验证
+    function verify_password(ths){
+        var verify_password = document.getElementById("id_password");
+        $.ajax({
+                url: "{% url 'verify' %}",
+                data: {password:verify_password.value,'verify_name':"password"},
+                type: "POST",
+                dataType: "json",
+                success: function (data) {
+                if (data['status'] == 'SUCCESS') {
+                    document.getElementById("id_verify_password").className="form-group has-success has-feedback"};
+                    document.getElementById("id_password_span").innerHTML='';
+                if (data['status'] == 'ERROR') {
+                    document.getElementById("id_verify_password").className="form-group has-error has-feedback";
+                    document.getElementById("id_password_span").innerHTML=data['massage'];
+                    };
+            },
+            error: function (xhr) {
+                console.log(xhr);
+            }
+    })};
+
+    // 密码2 验证
+    function verify_password_again(ths){
+        var verify_password = document.getElementById("id_password");
+        var verify_password_again = document.getElementById("id_password_again");
+        $.ajax({
+                url: "{% url 'verify' %}",
+                data: {password:verify_password.value,password_again:verify_password_again.value,'verify_name':"password_again"},
+                type: "POST",
+                dataType: "json",
+                success: function (data) {
+                if (data['status'] == 'SUCCESS') {
+                    document.getElementById("id_verify_password_again").className="form-group has-success has-feedback"};
+                    document.getElementById("id_password_again_span").innerHTML='';
+                if (data['status'] == 'ERROR') {
+                    document.getElementById("id_verify_password_again").className="form-group has-error has-feedback";
+                    document.getElementById("id_password_again_span").innerHTML=data['massage'];
+                    };
+            },
+            error: function (xhr) {
+                console.log(xhr);
+            }
+    })};
 </script>
 {% endblock %}

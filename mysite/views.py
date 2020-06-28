@@ -84,21 +84,19 @@ def login(requests):
 
 def Verify(request):
     data={}
+    verify_name = request.POST.get('verify_name')
     if request.method == "POST":
         register_form = Registerform(request.POST)
-        # print('-------',register_form.errors['username'])
+        register_form.is_valid()
         # ajax 逐个验证
         if register_form.errors:
             # 用户名验证
-            username_data = register_form.errors.get('username', None)
-            if username_data:
+            verify_data = register_form.errors.get(verify_name, None)
+            if verify_data:
                 data['status'] = 'ERROR'
-                data['massage'] = username_data
-                print(data['status'])
-                # return JsonResponse(data)
+                data['massage'] = verify_data
             else:
                 data['status'] = 'SUCCESS'
-                # return JsonResponse(data)
         else:
             data['status'] = 'SUCCESS'
             print(data['status'])
@@ -108,22 +106,7 @@ def register(requests):
     data={}
     if requests.method == "POST":
         register_form = Registerform(requests.POST)
-    #     # print('-------',register_form.errors['username'])
-    #     # ajax 逐个验证
-    #     if register_form.errors:
-    #         # 用户名验证
-    #         username_data = register_form.errors.get('username', None)
-    #         if username_data:
-    #             data['status'] = 'ERROR'
-    #             data['massage'] = username_data
-    #             print(data['status'])
-    #             # return JsonResponse(data)
-    #         # else:
-    #         #     data['status'] = 'SUCCESS'
-    #             # return JsonResponse(data)
-    #     else:
-    #         data['status'] = 'SUCCESS'
-    #         return JsonResponse(data)
+        print(register_form.errors)
         # 验证成功
         if register_form.is_valid():
             username = register_form.cleaned_data['username']
@@ -142,12 +125,10 @@ def register(requests):
             else:
                 redirect_url =  requests.GET.get('home', reverse('home'))
             response=redirect(redirect_url)
-            # response = redirect(requests.GET.get('from', reverse('home')))
             response.set_cookie('jwt_token', result, max_age=10000)
             return response
     else:
         register_form = Registerform()
-    # context = {}
     data['register_form'] = register_form
     return render(requests, 'register.html', data)
 
