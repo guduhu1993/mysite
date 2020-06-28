@@ -82,16 +82,56 @@ def login(requests):
     context['login_form'] = login_form
     return render(requests, 'login.html', context)
 
+def Verify(request):
+    data={}
+    if request.method == "POST":
+        register_form = Registerform(request.POST)
+        # print('-------',register_form.errors['username'])
+        # ajax 逐个验证
+        if register_form.errors:
+            # 用户名验证
+            username_data = register_form.errors.get('username', None)
+            if username_data:
+                data['status'] = 'ERROR'
+                data['massage'] = username_data
+                print(data['status'])
+                # return JsonResponse(data)
+            else:
+                data['status'] = 'SUCCESS'
+                # return JsonResponse(data)
+        else:
+            data['status'] = 'SUCCESS'
+            print(data['status'])
+        return JsonResponse(data)
 
 def register(requests):
+    data={}
     if requests.method == "POST":
         register_form = Registerform(requests.POST)
+    #     # print('-------',register_form.errors['username'])
+    #     # ajax 逐个验证
+    #     if register_form.errors:
+    #         # 用户名验证
+    #         username_data = register_form.errors.get('username', None)
+    #         if username_data:
+    #             data['status'] = 'ERROR'
+    #             data['massage'] = username_data
+    #             print(data['status'])
+    #             # return JsonResponse(data)
+    #         # else:
+    #         #     data['status'] = 'SUCCESS'
+    #             # return JsonResponse(data)
+    #     else:
+    #         data['status'] = 'SUCCESS'
+    #         return JsonResponse(data)
+        # 验证成功
         if register_form.is_valid():
             username = register_form.cleaned_data['username']
             email = register_form.cleaned_data['email']
+            mobile = register_form.cleaned_data['mobile']
             password = register_form.cleaned_data['password']
             user = User.objects.create_user(
-                username=username, email=email, password=password)
+                username=username, email=email, mobile=mobile, password=password)
             user.save()
             # 登录
             user = auth.authenticate(username=username, password=password)
@@ -107,9 +147,9 @@ def register(requests):
             return response
     else:
         register_form = Registerform()
-    context = {}
-    context['register_form'] = register_form
-    return render(requests, 'register.html', context)
+    # context = {}
+    data['register_form'] = register_form
+    return render(requests, 'register.html', data)
 
 
 def logout(requests):
@@ -161,36 +201,42 @@ class ImageCodeView(APIView):
     图片验证码
     """
     def get(self, request, pic_id):
-        """
-        获取图片验证码
-        """
-        print(pic_id)
         # 生成验证码图片
         genpic = GenPic()
         text, image = genpic.gene_code(request)
         # 固定返回验证码图片数据，不需要REST framework框架的Response帮助我们决定返回响应数据的格式
         # 所以此处直接使用Django原生的HttpResponse即可
-        print(text.lower())
         with open("dictionary.json","r") as f:
             pic_dic = json.loads(f.read())
             pic_dic[pic_id] = text.lower()
         with open("dictionary.json","w") as f:
             f.write(json.dumps(pic_dic))
         return HttpResponse(image, content_type="images/png")
-
-class VerifyPic(APIView):
-    # 验证手机号规范、用户名规范是否已存在、验证码正确性、邮箱规范是否已存在
+    
+    # 验证码正确性
     def post(self,request,pic_id):
         data = {}
-        print('------',pic_id)
-        print('======',request.POST.get('pic_str'))
         with open("dictionary.json","r") as f:
             pic_code_dic = json.loads(f.read())
-            # print('******',pic_code_dic)
-            # print('+++++++',pic_code_dic[str(pic_id)])
         if pic_code_dic[str(pic_id)] == request.POST.get('pic_str').lower():
             data['status'] = 'SUCCESS'
         else:
             data['status'] = 'ERROR'
         return JsonResponse(data)
+
+# class VerifyPic(APIView):
+#     # 验证手机号规范、用户名规范是否已存在、验证码正确性、邮箱规范是否已存在
+#     def post(self,request,pic_id):
+#         data = {}
+#         print('------',pic_id)
+#         print('======',request.POST.get('pic_str'))
+#         with open("dictionary.json","r") as f:
+#             pic_code_dic = json.loads(f.read())
+#             # print('******',pic_code_dic)
+#             # print('+++++++',pic_code_dic[str(pic_id)])
+#         if pic_code_dic[str(pic_id)] == request.POST.get('pic_str').lower():
+#             data['status'] = 'SUCCESS'
+#         else:
+#             data['status'] = 'ERROR'
+#         return JsonResponse(data)
     

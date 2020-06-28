@@ -6,9 +6,13 @@
 <center>
 <form class="form-inline" method="POST">
     {% csrf_token %}
-    <div class="form-group has-success has-feedback">
+
+    <!-- <div>{{ register_form.errors.username }}</div> -->
+
+    <div id="id_verify_username" class="form-group has-success has-feedback">
         <label class="control-label" for="inputSuccess4">请输入账号</label>
         {{ register_form.username }}
+        <span id='id_username_span'></span>
     </div>
     <br>
     <br>
@@ -59,6 +63,7 @@
         rnd	+=	Math.floor(Math.random()*10);
     return rnd;
     };
+    // 获取验证码
     window.onload(refreshcode());
     function refreshcode(ths){
         code_id = RndNum(5);
@@ -72,12 +77,12 @@
                     ths.src += '?';
                     },
                 error: function(xmlHttpRequest, statusText, errorThrown){}});};
-
+    // 验证码验证
     function verify_code(ths){
         var verify_code = document.getElementById("id_verify_pic");
         // alert(verify_code.value);
         $.ajax({
-                url: "{% url 'verify_pic' '1' %}".replace('1', code_id),
+                url: "{% url 'image_codes' '1' %}".replace('1', code_id),
                 data: {pic_str:verify_code.value},
                 type: "POST",
                 dataType: "json",
@@ -94,5 +99,31 @@
                 console.log(xhr);
             }
     })};
+
+    // 用户名验证
+    function verify_username(ths){
+        var verify_username = document.getElementById("id_username");
+        // alert(verify_code.value);
+        $.ajax({
+                url: "{% url 'verify' %}",
+                data: {username:verify_username.value},
+                type: "POST",
+                dataType: "json",
+                success: function (data) {
+                    // alert(data['status'])
+                if (data['status'] == 'SUCCESS') {
+                    document.getElementById("id_verify_username").className="form-group has-success has-feedback"};
+                    document.getElementById("id_username_span").innerHTML='';
+                if (data['status'] == 'ERROR') {
+                    document.getElementById("id_verify_username").className="form-group has-error has-feedback";
+                    document.getElementById("id_username_span").innerHTML=data['massage'];
+                    };
+                    
+            },
+            error: function (xhr) {
+                console.log(xhr);
+            }
+    })};
+
 </script>
 {% endblock %}

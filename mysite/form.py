@@ -23,7 +23,7 @@ class Loginform(forms.Form):
 
 class Registerform(forms.Form):
     username = forms.CharField(label='用户名', max_length=30, min_length=3, required=True, widget=forms.TextInput(
-        attrs={"class": "form-control", "placehoder": "请输入用户名"}))
+        attrs={"class": "form-control", "placehoder": "请输入用户名", "onchange": "verify_username(this);"}))
     mobile = forms.CharField(label='用户名', max_length=11, min_length=11, required=True, widget=forms.TextInput(
         attrs={"class": "form-control", "placehoder": "请输入手机号"}))
     verify_pic = forms.CharField(label='用户名', max_length=30, min_length=3, required=True, widget=forms.TextInput(
@@ -41,8 +41,14 @@ class Registerform(forms.Form):
     def clean_username(self):
         username = self.cleaned_data['username']
         if User.objects.filter(username=username).exists():
-            raise forms.ValidationError("用户名已存在")
+            raise forms.ValidationError(message="用户名已存在")
         return username
+
+    def clean_mobile(self):
+        mobile = self.cleaned_data['mobile']
+        if User.objects.filter(mobile=mobile).exists():
+            raise forms.ValidationError("手机号已存在")
+        return mobile
 
     def clean_email(self):
         email = self.cleaned_data['email']
