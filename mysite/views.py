@@ -13,6 +13,8 @@ from rest_framework.views import APIView
 from django.http import HttpResponse, JsonResponse
 from mysite.gen_pic import GenPic
 import json
+
+
 # Create your views here.
 
 def login_required(func):
@@ -22,11 +24,12 @@ def login_required(func):
         if result['error']:
             return redirect('login')
         return func(requests, *args, **kwargs)
+
     return wrapper
 
+
 def home(requests):
-    context = {}
-    context['hello'] = '欢迎光临我的博客'
+    context = {'hello': '欢迎光临我的博客'}
     return render(requests, 'home.html', context)
 
 
@@ -35,12 +38,13 @@ def create_token(expire_time):
     headers = {'typ': 'jwt', 'alg': 'HS256'}
     # 构造payload
     payload = {
-        'user_id': 1, # 自定义用户ID
-        'username': 'wupeiqi', # 自定义用户名
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=expire_time) # 超时时间
+        'user_id': 1,  # 自定义用户ID
+        'username': 'wupeiqi',  # 自定义用户名
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=expire_time)  # 超时时间
     }
     result = jwt.encode(payload=payload, key=SALT, algorithm="HS256", headers=headers).decode('utf-8')
     return result
+
 
 def parse_payload(token):
     """
@@ -61,29 +65,30 @@ def parse_payload(token):
         result['error'] = '非法的token'
     return result
 
+
 def login(requests):
     if requests.method == "POST":
         login_form = Loginform(requests.POST)
         if login_form.is_valid():
             user = login_form.cleaned_data['user']
             auth.login(requests, user)
-            result=create_token(2)
+            result = create_token(2)
             print(requests.GET.get('from'))
-            if not requests.GET.get('from') in ['/register/','/login/']:
+            if not requests.GET.get('from') in ['/register/', '/login/']:
                 redirect_url = requests.GET.get('from', reverse('home'))
             else:
-                redirect_url =  requests.GET.get('home', reverse('home'))
-            response=redirect(redirect_url)
+                redirect_url = requests.GET.get('home', reverse('home'))
+            response = redirect(redirect_url)
             response.set_cookie('jwt_token', result, max_age=10000)
             return response
     else:
         login_form = Loginform()
-    context = {}
-    context['login_form'] = login_form
+    context = {'login_form': login_form}
     return render(requests, 'login.html', context)
 
+
 def Verify(request):
-    data={}
+    data = {}
     verify_name = request.POST.get('verify_name')
     if request.method == "POST":
         register_form = Registerform(request.POST)
@@ -102,8 +107,9 @@ def Verify(request):
             print(data['status'])
         return JsonResponse(data)
 
+
 def register(requests):
-    data={}
+    data = {}
     if requests.method == "POST":
         register_form = Registerform(requests.POST)
         print(register_form.errors)
@@ -119,12 +125,12 @@ def register(requests):
             # 登录
             user = auth.authenticate(username=username, password=password)
             auth.login(requests, user)
-            result=create_token(2)
-            if not requests.GET.get('from') in ['/register/','/login/']:
+            result = create_token(2)
+            if not requests.GET.get('from') in ['/register/', '/login/']:
                 redirect_url = requests.GET.get('from', reverse('home'))
             else:
-                redirect_url =  requests.GET.get('home', reverse('home'))
-            response=redirect(redirect_url)
+                redirect_url = requests.GET.get('home', reverse('home'))
+            response = redirect(redirect_url)
             response.set_cookie('jwt_token', result, max_age=10000)
             return response
     else:
@@ -135,7 +141,7 @@ def register(requests):
 
 def logout(requests):
     auth.logout(requests)
-    result=create_token(0)
+    result = create_token(0)
     print(requests.GET.get('from'))
     response = redirect(requests.GET.get('from', reverse('home')))
     response.set_cookie('jwt_token', result, max_age=10000)
@@ -158,8 +164,7 @@ def update_email(requests):
             return redirect(requests.GET.get('from', reverse('home')))
     else:
         email_form = UpdateEmail()
-    context = {}
-    context['email_form'] = email_form
+    context = {'email_form': email_form}
     return render(requests, 'update_email.html', context)
 
 
@@ -172,52 +177,37 @@ def post(self, requests):
         user = login_form.cleaned_data['user']
         password = login_form.cleaned_data['password']
         # 构造header
-        token_header = {'alg':'HS256', 'typ':"jwt"}
+        token_header = {'alg': 'HS256', 'typ': "jwt"}
         # 构造payload
         token_payload['exp'] = datetime.datetime.utcnow() + datetime.timedelta(minutes=2)
         token = jwt.encode(headers=token_header, payload=token_payload, key=SALT, algorithm='HS256').decode('utf-8')
+
 
 class ImageCodeView(APIView):
     """
     图片验证码
     """
+
     def get(self, request, pic_id):
         # 生成验证码图片
         genpic = GenPic()
         text, image = genpic.gene_code(request)
         # 固定返回验证码图片数据，不需要REST framework框架的Response帮助我们决定返回响应数据的格式
         # 所以此处直接使用Django原生的HttpResponse即可
-        with open("dictionary.json","r") as f:
+        with open("dictionary.json", "r") as f:
             pic_dic = json.loads(f.read())
             pic_dic[pic_id] = text.lower()
-        with open("dictionary.json","w") as f:
+        with open("dictionary.json", "w") as f:
             f.write(json.dumps(pic_dic))
         return HttpResponse(image, content_type="images/png")
-    
+
     # 验证码正确性
-    def post(self,request,pic_id):
+    def post(self, request, pic_id):
         data = {}
-        with open("dictionary.json","r") as f:
+        with open("dictionary.json", "r") as f:
             pic_code_dic = json.loads(f.read())
         if pic_code_dic[str(pic_id)] == request.POST.get('pic_str').lower():
             data['status'] = 'SUCCESS'
         else:
             data['status'] = 'ERROR'
         return JsonResponse(data)
-
-# class VerifyPic(APIView):
-#     # 验证手机号规范、用户名规范是否已存在、验证码正确性、邮箱规范是否已存在
-#     def post(self,request,pic_id):
-#         data = {}
-#         print('------',pic_id)
-#         print('======',request.POST.get('pic_str'))
-#         with open("dictionary.json","r") as f:
-#             pic_code_dic = json.loads(f.read())
-#             # print('******',pic_code_dic)
-#             # print('+++++++',pic_code_dic[str(pic_id)])
-#         if pic_code_dic[str(pic_id)] == request.POST.get('pic_str').lower():
-#             data['status'] = 'SUCCESS'
-#         else:
-#             data['status'] = 'ERROR'
-#         return JsonResponse(data)
-    
