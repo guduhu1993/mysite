@@ -10,7 +10,7 @@ import io
 class GenPic:
     def __init__(self):
         # 将字体文件放置于static文件内，不依赖于系统
-        self.font_path = '/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf'
+        self.font_path = 'static/DejaVuSans.ttf'
         # 设置验证码的位数
         self.number = 4
         # 生成验证码图片的高度和宽度，可以依据实际情况选择
